@@ -144,6 +144,6 @@ h3{font-size:1.05rem;font-weight:600;line-height:1.35}
 }
 
 /* Profile photo in the hero panel (circle) */
-.portrait{display:block;width:170px;height:170px;margin:28px auto 24px;border-radius:50%;object-fit:cover;object-position:center top;border:1px solid var(--ink);filter:grayscale(1)}
+.portrait{display:block;width:170px;height:170px;margin:28px auto 24px;border-radius:50%;object-fit:cover;object-position:center top;border:1px solid var(--ink);}
 .portrait + .spec-row{border-top:1px solid var(--line)}
 @media (max-width:860px){.portrait{width:140px;height:140px}}
