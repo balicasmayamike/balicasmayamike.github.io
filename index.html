@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mike M. Balicasmaya | Electrical Designer & CAD Operator</title>
+<meta name="description" content="Electrical Engineering graduate, electrical designer and CAD operator from Guinobatan, Albay. PEC 2017 compliant designs and field diagnostics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== NAV ========== -->
+<header class="nav" id="top">
+  <div class="wrap nav-in">
+    <a href="#top" class="brand">MMB</a>
+    <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+    <nav id="menu" aria-label="Primary">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Works</a>
+      <a href="#skills">Skills</a>
+      <a href="#certifications">Credentials</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ========== HERO / ABOUT ========== -->
+<section id="about" class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="mono muted">Guinobatan, Albay, Philippines</p>
+      <h1>Mike M. Balicasmaya</h1>
+      <p class="lead">Electrical Engineering Graduate | Electrical Designer &amp; CAD Operator</p>
+      <p class="muted body">Bicol University graduate producing PEC 2017-compliant electrical plans, load schedules and single-line diagrams, with hands-on hospital field experience.</p>
+      <div class="cta">
+        <a class="btn btn-dark" href="./resume.pdf" download>Download Resume / CV</a>
+        <a class="btn btn-line" href="#projects">View Engineering Works</a>
+      </div>
+      <ul class="links mono">
+        <!-- Swap these placeholder URLs with your real profiles -->
+        <li><a href="https://github.com/your-username" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://www.linkedin.com/in/your-profile" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="mailto:balicasmayamike@gmail.com">Email</a></li>
+      </ul>
+    </div>
+    <aside class="spec" aria-label="Quick facts">
+      <div class="spec-row"><span class="mono muted">Education</span><span>Bicol University</span></div>
+      <div class="spec-row"><span class="mono muted">Code</span><span>PEC 2017</span></div>
+      <div class="spec-row"><span class="mono muted">Tools</span><span>AutoCAD, DIALux evo</span></div>
+      <div class="spec-row"><span class="mono muted">Phone</span><span class="mono">09150078307</span></div>
+      <div class="spec-row"><span class="mono muted">Email</span><span class="mono">balicasmayamike@gmail.com</span></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ========== EXPERIENCE ========== -->
+<section id="experience" class="sec">
+  <div class="wrap">
+    <h2 class="reveal">Field &amp; Internship Experience</h2>
+    <div class="timeline reveal">
+      <article class="tl-item">
+        <div class="tl-meta mono muted">Feb 2026 – Apr 2026<br>Sagpon, Daraga, Albay</div>
+        <div class="card">
+          <h3>Student Internship Program (OJT)</h3>
+          <p class="muted">Bicol Regional Hospital and Medical Center (BRHMC)</p>
+          <ul class="list">
+            <li>Engineered PEC 2017-compliant electrical plans and three-phase distribution systems within the Internal Project Management Unit (IPMU), delivering a safe and optimized power infrastructure for a new facility.</li>
+            <li>Verified and troubleshot critical medical equipment ranging from standard patient monitors to CT scanners within the Biomedical Department, minimizing equipment downtime and guaranteeing operational readiness for patient care.</li>
+            <li>Resolved electrical and system issues within the Electrical Maintenance department by executing fault diagnostics and cable terminations, ensuring continuous and safe power operations across the hospital complex.</li>
+          </ul>
+        </div>
+      </article>
+      <!-- Add future roles by duplicating the <article class="tl-item"> block above -->
+    </div>
+  </div>
+</section>
+
+<!-- ========== PROJECTS ========== -->
+<section id="projects" class="sec alt">
+  <div class="wrap">
+    <h2 class="reveal">Engineering Works &amp; CAD Portfolio</h2>
+    <div class="filters" role="tablist" aria-label="Filter projects">
+      <button class="chip active" data-filter="all" role="tab" aria-selected="true">All Works</button>
+      <button class="chip" data-filter="as-built" role="tab" aria-selected="false">As-Built Plans</button>
+      <button class="chip" data-filter="proposed" role="tab" aria-selected="false">Proposed Designs</button>
+      <button class="chip" data-filter="hospital" role="tab" aria-selected="false">Hospital / Field</button>
+    </div>
+    <p class="empty muted" id="empty" hidden>No works in this category yet. Check back soon.</p>
+
+    <div class="grid" id="grid">
+      <!--
+        ADD A NEW PROJECT: copy one <article class="project"> block, then change:
+        data-cat (as-built | proposed | hospital), the image path, and the text.
+        Put your exported drawing in /assets (e.g. assets/project-4.png).
+      -->
+      <article class="project card" data-cat="as-built">
+        <div class="frame"><img src="./assets/project-1.png" alt="As-built electrical layout, commercial building renovation" loading="lazy"></div>
+        <div class="p-body">
+          <span class="tag mono">As-Built Plans</span>
+          <h3>Renovation of Commercial Building (As-Built)</h3>
+          <p class="mono muted sm" data-loc>Bagumbayan Grande, Goa, Camarines Sur</p>
+          <p class="mono sm" data-role>Electrical Designer / CAD Operator</p>
+          <p class="muted" data-scope>Engineered complete as-built electrical layouts, lighting and power branch circuiting, and PEC-compliant load schedule calculations to verify existing system capacity and ensure safe commercial operation.</p>
+          <button class="btn btn-line sm-btn inspect">Inspect Drawing / Details</button>
+        </div>
+      </article>
+
+      <article class="project card" data-cat="proposed">
+        <div class="frame"><img src="./assets/project-2.png" alt="Proposed electrical plans, two-storey commercial building" loading="lazy"></div>
+        <div class="p-body">
+          <span class="tag mono">Proposed Designs</span>
+          <h3>Proposed Two-Storey Commercial Building</h3>
+          <p class="mono muted sm" data-loc>Rizal St., Bagumbayan Grande, Goa, Camarines Sur</p>
+          <p class="mono sm" data-role>Electrical Designer / CAD Operator</p>
+          <p class="muted" data-scope>Developed full working electrical plans, single-line diagrams, voltage drop assessments, and balanced load schedules tailored for a multi-tenant two-storey commercial structure in strict adherence to the Philippine Electrical Code (PEC).</p>
+          <button class="btn btn-line sm-btn inspect">Inspect Drawing / Details</button>
+        </div>
+      </article>
+
+      <article class="project card" data-cat="as-built">
+        <div class="frame"><img src="./assets/project-3.png" alt="As-built electrical documentation, Goa Food Hub" loading="lazy"></div>
+        <div class="p-body">
+          <span class="tag mono">As-Built Plans</span>
+          <h3>Goa Food Hub (As-Built)</h3>
+          <p class="mono muted sm" data-loc>Zone 1 Tambuco, Goa, Camarines Sur</p>
+          <p class="mono sm" data-role>Electrical Designer / CAD Operator</p>
+          <p class="muted" data-scope>Produced comprehensive as-built electrical documentation, high-load kitchen equipment circuit mapping, and protective device sizing to accurately reflect on-site power distribution and safety compliance.</p>
+          <button class="btn btn-line sm-btn inspect">Inspect Drawing / Details</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SKILLS ========== -->
+<section id="skills" class="sec">
+  <div class="wrap">
+    <h2 class="reveal">Technical Skills &amp; Proficiencies</h2>
+    <div class="skills reveal">
+      <div class="card skill">
+        <div class="s-head"><h3>AutoCAD</h3><span class="mono">8/10</span></div>
+        <p class="muted sm">Electrical drafting &amp; layouts</p>
+        <div class="gauge" data-level="8" aria-label="8 out of 10"></div>
+      </div>
+      <div class="card skill">
+        <div class="s-head"><h3>DIALux evo</h3><span class="mono">8/10</span></div>
+        <p class="muted sm">Lighting simulation &amp; photometrics</p>
+        <div class="gauge" data-level="8" aria-label="8 out of 10"></div>
+      </div>
+      <div class="card skill">
+        <div class="s-head"><h3>Electrical Design &amp; PEC 2017</h3><span class="mono tag">Core Competency</span></div>
+        <p class="muted sm">Load scheduling, single-line diagrams, circuit &amp; breaker sizing</p>
+      </div>
+      <div class="card skill">
+        <div class="s-head"><h3>Field Diagnostics &amp; Maintenance</h3><span class="mono tag">Core Competency</span></div>
+        <p class="muted sm">Three-phase systems, terminations, biomedical &amp; facility equipment troubleshooting</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CERTIFICATIONS ========== -->
+<section id="certifications" class="sec alt">
+  <div class="wrap">
+    <h2 class="reveal">Certifications &amp; Eligibilities</h2>
+    <div class="certs reveal">
+      <div class="card cert"><span class="mono tag">2025</span><h3>Basic Occupational Safety and Health (BOSH), Safety Officer II</h3><p class="muted">Beacon OSH Training Co.</p></div>
+      <div class="card cert"><span class="mono tag">2023</span><h3>Civil Service Eligibility, Professional Level</h3><p class="muted">Civil Service Commission</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CONTACT ========== -->
+<section id="contact" class="sec">
+  <div class="wrap">
+    <h2 class="reveal">Contact</h2>
+    <p class="muted body reveal">Click a detail to copy it to your clipboard.</p>
+    <div class="contacts reveal">
+      <button class="card copy" data-copy="balicasmayamike@gmail.com"><span class="mono muted sm">Email</span><span class="mono">balicasmayamike@gmail.com</span></button>
+      <button class="card copy" data-copy="09150078307"><span class="mono muted sm">Phone</span><span class="mono">09150078307</span></button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="wrap mono sm muted">Built for GitHub Pages • Mike M. Balicasmaya © 2026</div></footer>
+
+<!-- ========== LIGHTBOX ========== -->
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="modal-box">
+    <button class="m-close" id="m-close" aria-label="Close">&times;</button>
+    <div class="m-img"><img id="m-img" src="" alt=""></div>
+    <div class="m-info">
+      <span class="tag mono" id="m-tag"></span>
+      <h3 id="m-title"></h3>
+      <dl class="mono sm">
+        <dt class="muted">Location</dt><dd id="m-loc"></dd>
+        <dt class="muted">Role</dt><dd id="m-role"></dd>
+      </dl>
+      <p class="muted" id="m-scope"></p>
+    </div>
+  </div>
+</div>
+
+<div class="toast mono" id="toast" role="status" aria-live="polite">Copied!</div>
+<script src="script.js"></script>
+</body>
+</html>
