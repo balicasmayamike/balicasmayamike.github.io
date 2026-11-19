@@ -11,7 +11,7 @@
   css.textContent = `
     .frame{position:relative}
     .pdf-thumb{width:100%;height:100%;border:0;background:#fff;pointer-events:none}
-    .badge{position:absolute;top:10px;left:10px;z-index:1;background:#09090B;color:#fff;font:500 .7rem var(--mono);padding:3px 8px;border-radius:var(--r)}
+    .badge{position:absolute;top:10px;left:10px;z-index:1;background:var(--ink);color:var(--bg);font:500 .7rem var(--mono);padding:3px 8px;border-radius:var(--r)}
     .m-img{align-items:start!important}
     .viewer{width:100%;display:grid;gap:0}
     .viewer iframe{width:100%;height:75vh;border:0;background:#fff}
@@ -140,4 +140,54 @@
   $$('.gauge').forEach(g => {
     for (let i = 0; i < 10; i++) { const s = document.createElement('i'); if (i < +g.dataset.level) s.className = 'on'; g.appendChild(s); }
   });
+
+  /* ---------- 7. Dark mode toggle (remembers choice) ---------- */
+  const root = document.documentElement, tbtn = $('#theme');
+  const syncTheme = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    tbtn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    tbtn.setAttribute('aria-pressed', dark);
+  };
+  syncTheme();
+  tbtn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    syncTheme();
+  });
+
+  /* ---------- 8. Works carousel: arrows, mouse drag, counter ---------- */
+  const track = $('#grid'), prevB = $('#prev'), nextB = $('#next'), count = $('#count');
+  const visible = () => cards.filter(c => !c.classList.contains('hide'));
+  const stepPx = () => { const c = visible()[0]; return c ? c.offsetWidth + 20 : 340; };
+  const updateCar = () => {
+    const max = track.scrollWidth - track.clientWidth;
+    prevB.disabled = track.scrollLeft < 4;
+    nextB.disabled = track.scrollLeft > max - 4;
+    const n = visible().length;
+    const at = Math.min(n, Math.round(track.scrollLeft / stepPx()) + 1);
+    count.textContent = n ? at + ' / ' + n : '0 / 0';
+  };
+  prevB.addEventListener('click', () => track.scrollBy({ left: -stepPx(), behavior: 'smooth' }));
+  nextB.addEventListener('click', () => track.scrollBy({ left: stepPx(), behavior: 'smooth' }));
+  track.addEventListener('scroll', updateCar, { passive: true });
+  window.addEventListener('resize', updateCar);
+  chips.forEach(ch => ch.addEventListener('click', () => { track.scrollTo({ left: 0 }); updateCar(); }));
+  track.addEventListener('dragstart', e => e.preventDefault());
+
+  // Click-and-drag scrolling for mouse users (touch uses native swipe)
+  let down = false, sx = 0, sl = 0, moved = 0;
+  track.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    down = true; moved = 0; sx = e.clientX; sl = track.scrollLeft;
+  });
+  window.addEventListener('pointermove', e => {
+    if (!down) return;
+    const dx = e.clientX - sx;
+    moved = Math.max(moved, Math.abs(dx));
+    if (moved > 5) { track.classList.add('drag'); track.scrollLeft = sl - dx; }
+  });
+  window.addEventListener('pointerup', () => { if (down) { down = false; track.classList.remove('drag'); } });
+  track.addEventListener('click', e => { if (moved > 5) { e.preventDefault(); e.stopPropagation(); moved = 0; } }, true);
+  updateCar();
 })();
