@@ -159,28 +159,31 @@ h3{font-size:1.05rem;font-weight:600;line-height:1.35}
 }
 [data-theme="dark"] .card:hover{box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .tools{display:flex;align-items:center;gap:4px}
-.theme-btn{background:none;border:0;width:40px;height:40px;display:grid;place-items:center;color:var(--ink);cursor:pointer;border-radius:50%;transition:background .15s}
-.theme-btn:hover{background:var(--chip)}
-.theme-btn .i-sun{display:none}
-[data-theme="dark"] .theme-btn .i-sun{display:block}
-[data-theme="dark"] .theme-btn .i-moon{display:none}
+/* Pill-shaped theme switch: knob shows a sun in light mode and a moon in dark mode */
+.theme-btn{position:relative;width:60px;height:32px;padding:0;border-radius:99px;border:1px solid var(--chip-line);background:var(--chip);cursor:pointer;transition:background .25s,border-color .25s}
+.theme-btn:hover{border-color:var(--ink)}
+.theme-btn .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.theme-btn .knob svg{grid-area:1/1;transition:opacity .2s,transform .3s}
+.theme-btn .i-moon{opacity:0;transform:rotate(-60deg) scale(.4)}
+[data-theme="dark"] .theme-btn .knob{transform:translateX(28px)}
+[data-theme="dark"] .theme-btn .i-sun{opacity:0;transform:rotate(60deg) scale(.4)}
+[data-theme="dark"] .theme-btn .i-moon{opacity:1;transform:none}
 nav a.nav-cta{color:var(--bg);background:var(--ink);padding:6px 14px;border-radius:var(--r);font-weight:600}
 nav a.nav-cta:hover{color:var(--bg);opacity:.85}
 
-/* ========== WORKS CAROUSEL (swipe, soft edges) ========== */
+/* ========== WORKS CAROUSEL (infinite swipe loop, soft edges) ========== */
 .carousel{position:relative;margin-inline:-24px}
-.grid{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:40px;padding:12px 40px 32px;scrollbar-width:none;cursor:grab;
+.grid{position:relative;overflow:hidden;height:420px;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;outline:none;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);
   mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%)}
-.grid::-webkit-scrollbar{display:none}
-.grid.drag{scroll-snap-type:none;cursor:grabbing;user-select:none}
-.project{flex:0 0 min(340px,80vw);scroll-snap-align:start;border-radius:20px;box-shadow:0 2px 12px rgba(9,9,11,.06)}
+.grid.drag{cursor:grabbing}
+.grid .project{position:absolute;top:12px;left:0;width:min(340px,80vw);border-radius:20px;box-shadow:0 2px 12px rgba(9,9,11,.06);transition:box-shadow .2s,border-color .2s;will-change:transform}
+.grid img{-webkit-user-drag:none;pointer-events:none}
 .project .btn,.project .sm-btn{border-radius:99px}
 .car-ctrl{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 24px}
 .car-btns{display:flex;gap:10px}
 .car-btns button{width:44px;height:44px;border-radius:50%;border:1px solid var(--ink);background:transparent;color:var(--ink);font:1.1rem var(--mono);cursor:pointer;transition:.15s}
 .car-btns button:hover:not(:disabled){background:var(--ink);color:var(--bg)}
-.car-btns button:disabled{opacity:.3;cursor:default}
 
 /* ========== HIRE ME ========== */
 .hire{background-color:var(--ink);color:var(--bg);border-radius:24px;padding:clamp(28px,6vw,64px);
