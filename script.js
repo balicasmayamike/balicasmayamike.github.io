@@ -49,6 +49,7 @@
     const frame = $('.frame', card), img = $('img', frame);
     const files = (card.dataset.files || img.getAttribute('src') || '').split(',').map(s => s.trim()).filter(Boolean);
     card._files = files;
+    card.dataset.files = files.join(',');   // kept on the element so carousel clones inherit it
     const first = files[0];
     if (card.dataset.thumb) img.src = card.dataset.thumb;
     else if (first && isPdf(first)) {
@@ -91,7 +92,7 @@
     viewer.append(bar, view);
   };
   const openModal = card => {
-    files = card._files || []; idx = 0;
+    files = (card.dataset.files || '').split(',').filter(Boolean); idx = 0;
     title = $('h3', card).textContent;
     $('#m-tag').textContent = $('.tag', card).textContent;
     $('#m-title').textContent = title;
@@ -108,7 +109,6 @@
     viewer.replaceChildren();
     if (lastFocus) lastFocus.focus();
   };
-  $$('.inspect').forEach(b => b.addEventListener('click', () => openModal(b.closest('.project'))));
   $('#m-close').addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => {
@@ -156,38 +156,109 @@
     syncTheme();
   });
 
-  /* ---------- 8. Works carousel: arrows, mouse drag, counter ---------- */
+  /* ---------- 8. Infinite swipe carousel ----------
+     Cards sit on an endless ring: drag/swipe, flick, use the arrows or the
+     keyboard arrow keys and the feed keeps going in both directions. */
   const track = $('#grid'), prevB = $('#prev'), nextB = $('#next'), count = $('#count');
-  const visible = () => cards.filter(c => !c.classList.contains('hide'));
-  const stepPx = () => { const c = visible()[0]; return c ? c.offsetWidth + 20 : 340; };
-  const updateCar = () => {
-    const max = track.scrollWidth - track.clientWidth;
-    prevB.disabled = track.scrollLeft < 4;
-    nextB.disabled = track.scrollLeft > max - 4;
-    const n = visible().length;
-    const at = Math.min(n, Math.round(track.scrollLeft / stepPx()) + 1);
-    count.textContent = n ? at + ' / ' + n : '0 / 0';
-  };
-  prevB.addEventListener('click', () => track.scrollBy({ left: -stepPx(), behavior: 'smooth' }));
-  nextB.addEventListener('click', () => track.scrollBy({ left: stepPx(), behavior: 'smooth' }));
-  track.addEventListener('scroll', updateCar, { passive: true });
-  window.addEventListener('resize', updateCar);
-  chips.forEach(ch => ch.addEventListener('click', () => { track.scrollTo({ left: 0 }); updateCar(); }));
-  track.addEventListener('dragstart', e => e.preventDefault());
+  const src = cards.slice();            // original cards act as templates
+  src.forEach(c => c.remove());
+  const PAD = 40, GAP = 20;
+  let items = [], n = 0, step = 360, L = 360, off = -PAD, vel = 0, snap = null;
+  let running = false, dragging = false, lastIdx = -1, currentFilter = 'all';
+  const mod = (a, b) => ((a % b) + b) % b;
+  const snapNear = o => Math.round((o + PAD) / step) * step - PAD;
 
-  // Click-and-drag scrolling for mouse users (touch uses native swipe)
-  let down = false, sx = 0, sl = 0, moved = 0;
+  const draw = () => {
+    for (let j = 0; j < items.length; j++) {
+      const x = mod(j * step - off + step, L) - step;   // wraps cards around the ring
+      items[j].style.transform = 'translate3d(' + x + 'px,0,0)';
+    }
+    if (!n) { count.textContent = '0 / 0'; return; }
+    const idx = mod(Math.round((off + PAD) / step), n);
+    if (idx !== lastIdx) { lastIdx = idx; count.textContent = (idx + 1) + ' / ' + n; }
+  };
+
+  const tick = () => {
+    if (!dragging) {
+      if (Math.abs(vel) > 0.6) { off += vel; vel *= 0.93; snap = null; }      // momentum after a flick
+      else {
+        vel = 0;
+        if (snap === null) snap = snapNear(off);
+        const d = snap - off;
+        off += d * 0.18;                                                       // ease into place
+        if (Math.abs(d) < 0.4) { off = snap; snap = null; running = false; }
+      }
+    }
+    draw();
+    if (running) requestAnimationFrame(tick);
+  };
+  const kick = () => { if (!running) { running = true; requestAnimationFrame(tick); } };
+
+  const build = () => {
+    track.replaceChildren(); items = [];
+    const list = src.filter(c => currentFilter === 'all' || c.dataset.cat === currentFilter);
+    n = list.length; vel = 0; snap = null; off = -PAD; lastIdx = -1;
+    if (!n) { draw(); return; }
+    const add = () => list.forEach(c => {
+      const k = c.cloneNode(true); k.classList.remove('hide');
+      track.appendChild(k); items.push(k);
+    });
+    add();
+    step = items[0].offsetWidth + GAP;
+    const reps = Math.max(1, Math.ceil((track.clientWidth + step) / (n * step)));
+    for (let r = 1; r < reps; r++) add();                 // enough copies to fill the screen
+    L = items.length * step;
+    items.forEach(k => { k.style.height = 'auto'; });
+    const H = Math.max(...items.map(k => k.offsetHeight));
+    items.forEach(k => { k.style.height = H + 'px'; });   // equal-height cards
+    track.style.height = (H + 44) + 'px';
+    draw();
+  };
+
+  const go = d => { vel = 0; snap = (snap !== null ? snap : snapNear(off)) + d * step; kick(); };
+  prevB.addEventListener('click', () => go(-1));
+  nextB.addEventListener('click', () => go(1));
+  track.tabIndex = 0;
+  track.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+  });
+  chips.forEach(ch => ch.addEventListener('click', () => { currentFilter = ch.dataset.filter; build(); }));
+
+  // Drag / swipe (mouse, touch and pen)
+  let sx = 0, so = 0, lastO = 0, lastT = 0, moved = 0;
   track.addEventListener('pointerdown', e => {
-    if (e.pointerType !== 'mouse' || e.button !== 0) return;
-    down = true; moved = 0; sx = e.clientX; sl = track.scrollLeft;
+    if (e.button !== 0 || !n) return;
+    dragging = true; moved = 0; sx = e.clientX; so = off; lastO = off; lastT = performance.now(); vel = 0; snap = null; kick();
   });
   window.addEventListener('pointermove', e => {
-    if (!down) return;
+    if (!dragging) return;
     const dx = e.clientX - sx;
     moved = Math.max(moved, Math.abs(dx));
-    if (moved > 5) { track.classList.add('drag'); track.scrollLeft = sl - dx; }
+    off = so - dx; vel = off - lastO; lastO = off; lastT = performance.now();
+    if (moved > 5) track.classList.add('drag');
   });
-  window.addEventListener('pointerup', () => { if (down) { down = false; track.classList.remove('drag'); } });
+  const endDrag = () => {
+    if (!dragging) return;
+    dragging = false; track.classList.remove('drag');
+    if (performance.now() - lastT > 80) vel = 0;          // held still before letting go: no fling
+    kick();
+  };
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+
+  // A drag must not count as a click on "Inspect"; clones need delegated clicks
   track.addEventListener('click', e => { if (moved > 5) { e.preventDefault(); e.stopPropagation(); moved = 0; } }, true);
-  updateCar();
+  track.addEventListener('click', e => {
+    const b = e.target.closest('.inspect');
+    if (b) openModal(b.closest('.project'));
+  });
+  track.addEventListener('error', e => {                  // missing image inside a cloned card
+    if (e.target.tagName === 'IMG') { e.target.style.display = 'none'; e.target.parentElement.classList.add('noimg'); }
+  }, true);
+  track.addEventListener('dragstart', e => e.preventDefault());
+
+  let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(build, 200); });
+  build();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
 })();
