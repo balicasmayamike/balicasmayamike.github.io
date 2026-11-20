@@ -261,4 +261,101 @@
   let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(build, 200); });
   build();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
+
+  /* ---------- 9. Floating island nav: stronger shadow once scrolled ---------- */
+  const navEl = $('.nav');
+  const onScroll = () => navEl.classList.toggle('scrolled', window.scrollY > 10);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- 10. Interactive portrait (3D tilt + parallax + glare) ---------- */
+  const stage = $('.stage');
+  if (stage && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const setVars = (v) => Object.entries(v).forEach(([k, val]) => stage.style.setProperty(k, val));
+    stage.addEventListener('pointermove', e => {
+      const r = stage.getBoundingClientRect();
+      const nx = ((e.clientX - r.left) / r.width - .5) * 2;    // -1 .. 1
+      const ny = ((e.clientY - r.top) / r.height - .5) * 2;
+      setVars({ '--px': nx.toFixed(3), '--py': ny.toFixed(3), '--rx': (-ny * 10).toFixed(2) + 'deg', '--ry': (nx * 12).toFixed(2) + 'deg',
+                '--gx': ((nx + 1) * 50).toFixed(1) + '%', '--gy': ((ny + 1) * 50).toFixed(1) + '%' });
+    });
+    stage.addEventListener('pointerleave', () => setVars({ '--px': 0, '--py': 0, '--rx': '0deg', '--ry': '0deg', '--gx': '50%', '--gy': '25%' }));
+  }
+
+  /* ---------- 11. 3D animated triangle-mosaic background ----------
+     A wave-like grid of triangles, lit by a moving light and drawn in greys,
+     so it works in both light and dark mode. Reacts to the mouse and to scrolling. */
+  (() => {
+    const cv = $('#bg'); if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const TILT = 0.85, SIN = Math.sin(TILT), COS = Math.cos(TILT), CAM = 2400;
+    let W, H, S, cols, rows, WX, WY, WZ, SX, SY, mx = 0, my = 0, tx = 0, ty = 0;
+
+    const size = () => {
+      const dpr = window.innerWidth > 1400 ? 0.75 : 1;   // background is soft, so a lower resolution keeps it fast
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      S = Math.max(70, Math.min(150, W / 12));
+      rows = 30; cols = Math.ceil(W / (S * 0.35)) + 4;
+      const n = (cols + 1) * (rows + 1);
+      WX = new Float32Array(n); WY = new Float32Array(n); WZ = new Float32Array(n);
+      SX = new Float32Array(n); SY = new Float32Array(n);
+      for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) {
+        WX[j * (cols + 1) + i] = (i - cols / 2) * S;
+        WY[j * (cols + 1) + i] = (j - rows / 2) * S;
+      }
+      draw(performance.now());
+    };
+
+    const draw = (now) => {
+      const T = now * 0.001 + window.scrollY * 0.0012;       // scrolling also moves the terrain
+      mx += (tx - mx) * 0.05; my += (ty - my) * 0.05;
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const lo = dark ? 8 : 206, hi = dark ? 54 : 250;
+      const edge = dark ? 'rgba(255,255,255,0.08)' : 'rgba(9,9,11,0.09)';
+      const cx = W / 2 + mx * 30, cy = H * 0.5 + my * 20, AMP = S * 1.1, w1 = cols + 1;
+      for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) {
+        const k = j * w1 + i;
+        const z = (Math.sin(i * 0.5 + T * 0.7) * Math.cos(j * 0.42 - T * 0.6) + 0.5 * Math.sin((i + j) * 0.33 + T * 0.4)) * AMP;
+        WZ[k] = z;
+        const sc = CAM / Math.max(500, CAM - WY[k] * SIN - z * COS);   // never divide by ~0
+        SX[k] = cx + WX[k] * sc;
+        SY[k] = cy + (WY[k] * COS - z * SIN) * sc;
+      }
+      let lx = Math.cos(T * 0.5) * 0.7 + mx * 0.5, ly = Math.sin(T * 0.4) * 0.6 + my * 0.5 - 0.3, lz = 0.5;
+      const ll = Math.hypot(lx, ly, lz); lx /= ll; ly /= ll; lz /= ll;
+      ctx.clearRect(0, 0, W, H);
+      ctx.lineWidth = 1; ctx.strokeStyle = edge;
+      const tri = (a, b, c) => {
+        // skip triangles that are completely off-screen (big speed-up)
+        const x1 = SX[a], x2 = SX[b], x3 = SX[c], y1 = SY[a], y2 = SY[b], y3 = SY[c];
+        if ((x1 < 0 && x2 < 0 && x3 < 0) || (x1 > W && x2 > W && x3 > W) || (y1 < 0 && y2 < 0 && y3 < 0) || (y1 > H && y2 > H && y3 > H)) return;
+        const ux = WX[b] - WX[a], uy = WY[b] - WY[a], uz = WZ[b] - WZ[a];
+        const vx = WX[c] - WX[a], vy = WY[c] - WY[a], vz = WZ[c] - WZ[a];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const nl = Math.hypot(nx, ny, nz) || 1;
+        if (nz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+        const shade = Math.max(0, (nx * lx + ny * ly + nz * lz) / nl);
+        const g = (lo + (hi - lo) * shade) | 0;
+        ctx.fillStyle = 'rgb(' + g + ',' + g + ',' + g + ')';
+        ctx.beginPath(); ctx.moveTo(SX[a], SY[a]); ctx.lineTo(SX[b], SY[b]); ctx.lineTo(SX[c], SY[c]); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+      };
+      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {   // far rows first
+        const a = j * w1 + i, b = a + 1, c = a + w1, d = c + 1;
+        tri(a, b, c); tri(b, d, c);
+      }
+    };
+
+    let last = 0;   // ~30 fps is plenty for a slow background and saves battery
+    const loop = (t) => { if (!document.hidden && t - last >= 32) { draw(t); last = t; } requestAnimationFrame(loop); };
+    window.addEventListener('resize', size);
+    window.addEventListener('pointermove', e => { tx = (e.clientX / W - 0.5) * 2; ty = (e.clientY / H - 0.5) * 2; }, { passive: true });
+    size();
+    if (reduce) {                       // no motion: draw once, redraw when the theme changes
+      new MutationObserver(() => draw(0)).observe(document.documentElement, { attributes: true });
+    } else requestAnimationFrame(loop);
+  })();
 })();
