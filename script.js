@@ -163,15 +163,22 @@
   const src = cards.slice();            // original cards act as templates
   src.forEach(c => c.remove());
   const PAD = 40, GAP = 20;
-  let items = [], n = 0, step = 360, L = 360, off = -PAD, vel = 0, snap = null;
+  let items = [], n = 0, step = 360, L = 360, off = -PAD, vel = 0, snap = null, vw = 800;
   let running = false, dragging = false, lastIdx = -1, currentFilter = 'all';
   const mod = (a, b) => ((a % b) + b) % b;
   const snapNear = o => Math.round((o + PAD) / step) * step - PAD;
 
   const draw = () => {
+    const cw = step - GAP, mid = vw / 2;
     for (let j = 0; j < items.length; j++) {
       const x = mod(j * step - off + step, L) - step;   // wraps cards around the ring
-      items[j].style.transform = 'translate3d(' + x + 'px,0,0)';
+      const d = (x + cw / 2 - mid) / step;              // 0 = card in the centre
+      const ad = Math.abs(d), it = items[j];
+      const rot = Math.max(-32, Math.min(32, -d * 14)); // side cards turn toward the centre
+      const sc = 1 - Math.min(0.14, ad * 0.05);
+      it.style.transform = 'translate3d(' + x + 'px,0,' + (-ad * 40) + 'px) rotateY(' + rot + 'deg) scale(' + sc + ')';
+      it.style.opacity = Math.max(0, Math.min(1, Math.min(x + cw, vw - x) / (cw * 0.55)));   // soft fade at the edges
+      it.style.zIndex = 100 - Math.round(ad * 10);
     }
     if (!n) { count.textContent = '0 / 0'; return; }
     const idx = mod(Math.round((off + PAD) / step), n);
@@ -195,7 +202,7 @@
   const kick = () => { if (!running) { running = true; requestAnimationFrame(tick); } };
 
   const build = () => {
-    track.replaceChildren(); items = [];
+    track.replaceChildren(); items = []; vw = track.clientWidth;
     const list = src.filter(c => currentFilter === 'all' || c.dataset.cat === currentFilter);
     n = list.length; vel = 0; snap = null; off = -PAD; lastIdx = -1;
     if (!n) { draw(); return; }
@@ -358,4 +365,49 @@
       new MutationObserver(() => draw(0)).observe(document.documentElement, { attributes: true });
     } else requestAnimationFrame(loop);
   })();
+
+  /* ---------- 12. Skills: logo fallback + cursor light on the bento cards ---------- */
+  const logoFail = img => {
+    if (!img.dataset.tried && /\.svg$/i.test(img.src)) { img.dataset.tried = 1; img.src = img.src.replace(/\.svg$/i, '.png'); }   // try .png if .svg is missing
+    else img.parentElement.classList.add('nologo');                                                                             // else show letters
+  };
+  $$('.logo img').forEach(img => {
+    img.addEventListener('error', () => logoFail(img));
+    if (img.complete && img.naturalWidth === 0) logoFail(img);
+  });
+  $$('.beam').forEach(el => el.addEventListener('pointermove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }));
+
+  /* ---------- 13. Certificates: photo placeholder + enlarge popup ---------- */
+  const certModal = $('#cert-modal'), cImg = $('#c-img');
+  let certFocus = null;
+  const certFail = img => img.parentElement.classList.add('noimg');
+  $$('.cert-photo img').forEach(img => {
+    img.addEventListener('error', () => certFail(img));
+    if (img.complete && img.naturalWidth === 0) certFail(img);
+  });
+  const openCert = card => {
+    const img = $('.cert-photo img', card);
+    if (!img.complete || img.naturalWidth === 0) { showToast('Certificate photo coming soon'); return; }
+    cImg.src = img.getAttribute('src'); cImg.alt = img.alt;
+    $('#c-title').textContent = card.dataset.title;
+    $('#c-sub').textContent = card.dataset.sub;
+    certFocus = document.activeElement;
+    certModal.hidden = false; document.body.style.overflow = 'hidden';
+    $('#c-close').focus();
+  };
+  const closeCert = () => {
+    certModal.hidden = true; document.body.style.overflow = '';
+    if (certFocus) certFocus.focus();
+  };
+  $$('.cert-card').forEach(card => {
+    card.addEventListener('click', () => openCert(card));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCert(card); } });
+  });
+  $('#c-close').addEventListener('click', closeCert);
+  certModal.addEventListener('click', e => { if (e.target === certModal) closeCert(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !certModal.hidden) closeCert(); });
 })();
