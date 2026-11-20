@@ -176,40 +176,72 @@
   </div>
 </section>
 
-<!-- ========== SKILLS ========== -->
+<!-- ========== SKILLS (bento grid, sweeping-beam borders) ========== -->
+<!-- Logos: upload transparent SVG/PNG files to assets/logos/ (autocad, dialux, excel). They are recoloured to match the theme automatically. -->
 <section id="skills" class="sec">
   <div class="wrap">
     <h2 class="reveal">Technical Skills &amp; Proficiencies</h2>
-    <div class="skills reveal">
-      <div class="card skill">
+    <div class="bento reveal">
+      <article class="skill beam s3" style="--i:0">
+        <div class="logo" data-abbr="Ac"><img src="./assets/logos/autocad.svg" alt="AutoCAD logo"></div>
         <div class="s-head"><h3>AutoCAD</h3><span class="mono">8/10</span></div>
         <p class="muted sm">Electrical drafting &amp; layouts</p>
         <div class="gauge" data-level="8" aria-label="8 out of 10"></div>
-      </div>
-      <div class="card skill">
+      </article>
+      <article class="skill beam s3" style="--i:1">
+        <div class="logo" data-abbr="Dx"><img src="./assets/logos/dialux.svg" alt="DIALux evo logo"></div>
         <div class="s-head"><h3>DIALux evo</h3><span class="mono">8/10</span></div>
         <p class="muted sm">Lighting simulation &amp; photometrics</p>
         <div class="gauge" data-level="8" aria-label="8 out of 10"></div>
-      </div>
-      <div class="card skill">
+      </article>
+      <article class="skill beam s3" style="--i:2">
+        <div class="logo" data-abbr="Xl"><img src="./assets/logos/excel.svg" alt="Microsoft Excel logo"></div>
+        <div class="s-head"><h3>Microsoft Excel</h3><span class="mono">8/10</span></div>
+        <p class="muted sm">Schedule of loads, load calculations &amp; data tables</p>
+        <div class="gauge" data-level="8" aria-label="8 out of 10"></div>
+      </article>
+      <article class="skill beam s2" style="--i:3">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+        </div>
         <div class="s-head"><h3>Electrical Design &amp; PEC 2017</h3><span class="mono tag">Core Competency</span></div>
         <p class="muted sm">Load scheduling, single-line diagrams, circuit &amp; breaker sizing</p>
-      </div>
-      <div class="card skill">
+      </article>
+      <article class="skill beam s2" style="--i:4">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>
+        </div>
         <div class="s-head"><h3>Field Diagnostics &amp; Maintenance</h3><span class="mono tag">Core Competency</span></div>
         <p class="muted sm">Three-phase systems, terminations, biomedical &amp; facility equipment troubleshooting</p>
-      </div>
+      </article>
     </div>
   </div>
 </section>
 
-<!-- ========== CERTIFICATIONS ========== -->
+<!-- ========== CERTIFICATIONS (click a card to enlarge the certificate) ========== -->
+<!-- Upload certificate photos to assets/certs/ (bosh.jpg, civil-service.jpg). To add another, duplicate one <article class="cert-card"> block. -->
 <section id="certifications" class="sec alt">
   <div class="wrap">
     <h2 class="reveal">Certifications &amp; Eligibilities</h2>
     <div class="certs reveal">
-      <div class="card cert"><span class="mono tag">2025</span><h3>Basic Occupational Safety and Health (BOSH), Safety Officer II</h3><p class="muted">Beacon OSH Training Co.</p></div>
-      <div class="card cert"><span class="mono tag">2023</span><h3>Civil Service Eligibility, Professional Level</h3><p class="muted">Civil Service Commission</p></div>
+      <article class="cert-card" tabindex="0" role="button" aria-label="View certificate: Basic Occupational Safety and Health, Safety Officer II" data-title="Basic Occupational Safety and Health (BOSH), Safety Officer II" data-sub="Beacon OSH Training Co. · 2025">
+        <div class="cert-photo"><img src="./assets/certs/bosh.jpg" alt="BOSH Safety Officer II certificate" loading="lazy"><span class="view mono">View certificate</span></div>
+        <div class="cert-body">
+          <div class="cert-ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <span class="mono tag">2025</span>
+          <h3>Basic Occupational Safety and Health (BOSH), Safety Officer II</h3>
+          <p class="muted">Beacon OSH Training Co.</p>
+        </div>
+      </article>
+      <article class="cert-card" tabindex="0" role="button" aria-label="View certificate: Civil Service Eligibility, Professional Level" data-title="Civil Service Eligibility, Professional Level" data-sub="Civil Service Commission · 2023">
+        <div class="cert-photo"><img src="./assets/certs/civil-service.jpg" alt="Civil Service Eligibility certificate" loading="lazy"><span class="view mono">View certificate</span></div>
+        <div class="cert-body">
+          <div class="cert-ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 21l5-3 5 3-1.5-7.5"/></svg></div>
+          <span class="mono tag">2023</span>
+          <h3>Civil Service Eligibility, Professional Level</h3>
+          <p class="muted">Civil Service Commission</p>
+        </div>
+      </article>
     </div>
   </div>
 </section>
@@ -257,6 +289,15 @@
       </dl>
       <p class="muted" id="m-scope"></p>
     </div>
+  </div>
+</div>
+
+<!-- ========== CERTIFICATE POPUP ========== -->
+<div class="modal" id="cert-modal" hidden role="dialog" aria-modal="true" aria-labelledby="c-title">
+  <div class="cert-box">
+    <button class="m-close" id="c-close" aria-label="Close">&times;</button>
+    <img id="c-img" src="" alt="">
+    <div class="c-cap"><h3 id="c-title"></h3><p class="mono sm muted" id="c-sub"></p></div>
   </div>
 </div>
 
